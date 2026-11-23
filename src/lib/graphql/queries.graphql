@@ -1,0 +1,12 @@
+query GetProducts {
+  products {
+    id
+    name
+    colors {
+      id
+      images
+      price
+      sizes
+    }
+  }
+}

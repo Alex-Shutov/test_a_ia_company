@@ -1,0 +1,37 @@
+type Size {
+  id: Int!
+  name: String!
+  number: Int!
+}
+
+type Category {
+  id: Int!
+  name: String!
+}
+
+type Color {
+  id: Int!
+  name: String!
+  images: [String!]!
+  price: String!
+  description: String!
+  sizes: [Int!]!
+}
+
+type Product {
+  id: Int!
+  name: String!
+  categoryId: Int!
+  brand: String!
+  colors: [Color!]!
+}
+
+type Query {
+  sizes: [Size!]!
+  size(id: Int!): Size
+  categories: [Category!]!
+  category(id: Int!): Category
+  products: [Product!]!
+  product(id: Int!): Product
+  productColor(productId: Int!, colorId: Int!): Color
+}
