@@ -10,3 +10,23 @@ query GetProducts {
     }
   }
 }
+query GetProductDetails($id: Int!) {
+  product(id: $id) {
+    id
+    name
+    brand
+    colors {
+      id
+      name
+      price
+      description
+      images
+      sizes
+    }
+  }
+  sizes {
+    id
+    name
+    number
+  }
+}

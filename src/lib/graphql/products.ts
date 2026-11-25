@@ -1,8 +1,8 @@
 import { print } from "graphql";
 
 import { request } from "./client";
-import { GetProductsDocument } from "./generated";
-import type { GetProductsQuery } from "./generated";
+import { GetProductDetailsDocument, GetProductsDocument } from "./generated";
+import type { GetProductDetailsQuery, GetProductsQuery } from "./generated";
 
 export async function fetchProducts() {
     const data = await request<GetProductsQuery>(
@@ -10,4 +10,10 @@ export async function fetchProducts() {
     );
 
     return data.products;
+}
+
+export async function fetchProduct(id:number){
+    const data = await request<GetProductDetailsQuery>(print(GetProductDetailsDocument),{id})
+    return data
+
 }
