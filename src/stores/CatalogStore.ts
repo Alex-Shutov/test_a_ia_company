@@ -15,7 +15,7 @@ export class CatalogStore{
     get visibleProducts(){
        const query = this.search.trim().toLowerCase()
        return this.products.filter((product)=>{
-        const mathesQuery = product.name.includes(query)
+        const mathesQuery = product.name.toLowerCase().includes(query)
         return mathesQuery
        })
     }

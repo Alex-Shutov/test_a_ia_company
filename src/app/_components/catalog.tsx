@@ -30,7 +30,7 @@ export default observer(function CatalogView() {
             <p className="px-2">Ничего не найдено</p>
         ): (<ul className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {products.map((product)=>(
-                <ProductView product={product}/>
+                <ProductView key={product.id} product={product}/>
             ))}
         </ul>)}
     </section>
