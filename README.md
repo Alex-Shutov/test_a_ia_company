@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Мини-каталог товаров
 
-## Getting Started
+Тестовое приложение: каталог одежды, детальная страница товара и корзина. Данные о товарах берутся из `src/services/api.js` через локальный GraphQL-эндпоинт `/api/graphql`.
 
-First, run the development server:
+## Что реализовано
+
+- **Каталог `/`:** карточки с фото, названием и минимальной ценой среди всех цветов; поиск без учёта регистра, фильтр «В наличии» и сортировка по цене в обе стороны. Товар считается доступным, если хотя бы у одного цвета есть доступный размер.
+- **Товар `/products/[id]`:** галерея со стрелками без сторонних библиотек, выбор цвета и размера, цена и описание выбранного цвета. Недоступные размеры видны, но заблокированы. Для отсутствующего товара есть ссылка обратно в каталог.
+- **Корзина `/cart`:** позиции различаются по комбинации товара, цвета и размера. Повторное добавление увеличивает количество. Можно менять количество и удалять позиции; отображаются цена за штуку, сумма позиции и общий итог.
+- **Модалка корзины:** кнопка в шапке на главной открывает модалку поверх каталога и меняет URL на `/cart`. С карточки товара и при прямом открытии адреса показывается отдельная страница. Список и управление корзиной общие для обоих представлений.
+- **Сохранение:** изменения корзины записываются через MobX `reaction` в `localStorage` под ключом `cart`. После перезагрузки восстанавливаются позиции и их количество.
+- **Бонус — вариант товара в URL:** параметры `colorId` и `sizeId` обновляются при выборе и восстанавливают доступный вариант при открытии ссылки. Промокод не реализован.
+
+Маршрут `/purchase` — демозаглушка без оформления заказа.
+
+## Стек
+
+- **Next.js 16 (App Router), React 19, TypeScript** — маршруты и интерфейс.
+- **MobX и mobx-react-lite** — состояние каталога и корзины.
+- **GraphQL Yoga и GraphQL Code Generator** — локальный API и типизированные запросы.
+- **Tailwind CSS 4** — вёрстка и стили.
+
+## Запуск
+
+Нужен Node.js 20.9 или новее.
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000). Для production-сборки используйте `npm run build`, затем `npm start`. После изменений GraphQL-схемы или запросов перегенерируйте типы командой `npx graphql-codegen --config codegen.ts`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Скриншоты
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Главная страница
 
-## Learn More
+![Каталог с поиском, фильтром наличия и сортировкой](docs/screenshots/catalog.jpg)
 
-To learn more about Next.js, take a look at the following resources:
+### Детальная страница
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+![Футболка, галерея, цвета и доступные размеры](docs/screenshots/product.jpg)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Параметры выбора в URL
 
-## Deploy on Vercel
+Пример: [`/products/1?colorId=2&sizeId=4`](http://localhost:3000/products/1?colorId=2&sizeId=4) — белая футболка, размер L. Параметры появляются при выборе цвета и размера.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![Белый цвет и размер L выбраны](docs/screenshots/product-query.jpg)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Восстановление из localStorage
+
+На снимке — результат после перезагрузки `/cart`: остались две белые футболки размера L и итог 250,00.
+
+![Корзина после перезагрузки](docs/screenshots/cart-restored.jpg)
+
+### Модалка корзины
+
+![Корзина поверх каталога](docs/screenshots/cart-modal.jpg)
+
+### Страница корзины
+
+![Отдельная страница корзины с управлением количеством и итогом](docs/screenshots/cart.jpg)
