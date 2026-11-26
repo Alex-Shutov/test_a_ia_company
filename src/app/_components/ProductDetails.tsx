@@ -7,6 +7,7 @@ import Chip from "./Chip";
 import ProductGallery from "./ProductGallery";
 import { useStores } from "@/stores/StoreProvider";
 import CartDetailButton from "./CartDetailButton";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 type LoadState =
   | { status: "loading" }
   | { status: "error" }
@@ -15,9 +16,14 @@ type LoadState =
 const signal = new AbortController().signal;
 
 export default function ProductDetails({ id }: { id: number }) {
+  const searchParams = useSearchParams();
+  const pathName = usePathname();
+  const router = useRouter();
+
   const [state, setState] = useState<LoadState>({ status: "loading" });
-  const [colorId, setColorId] = useState<number | null>(null);
-  const [sizeId, setSizeId] = useState<number | null>(null);
+  const colorId = Number(searchParams.get("colorId")) ?? null;
+  const requestedSizeId = Number(searchParams.get("sizeId"));
+
   const { cart } = useStores();
   useEffect(() => {
     let ignore = false;
@@ -73,6 +79,10 @@ export default function ProductDetails({ id }: { id: number }) {
     );
   }
 
+  const color =
+    product.colors.find((el) => el.id === colorId) ?? product.colors[0];
+  const sizeId = color.sizes.includes(requestedSizeId) ? requestedSizeId : null;
+
   const handleAdd = () => {
     const findedSize = sizes.find((el) => el.id === sizeId);
     if (!color || !sizeId || !findedSize) return;
@@ -89,8 +99,34 @@ export default function ProductDetails({ id }: { id: number }) {
     console.log("После добавления", cart, cart.cart.size);
   };
 
-  const color =
-    product.colors.find((el) => el.id === colorId) ?? product.colors[0];
+  const setSizeId = (size: number | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (size === null) {
+      params.delete("sizeId");
+    } else {
+      if (!color?.sizes.includes(size)) return;
+      params.set("colorId", color.id.toString());
+      params.set("sizeId", size.toString());
+    }
+    router.replace(
+      params.toString() ? `${pathName}?${params.toString()}` : `${pathName}`,
+      { scroll: false },
+    );
+  };
+
+  const setColorId = (color: number | null) => {
+    const params = new URLSearchParams(searchParams);
+    if (color === null) {
+      params.delete("colorId");
+    } else {
+      params.set("colorId", String(color));
+    }
+    params.delete("sizeId");
+    router.replace(
+      params.toString() ? `${pathName}?${params.toString()}` : `${pathName}`,
+      { scroll: false },
+    );
+  };
 
   return (
     <div className="grid text-black items-start grid-cols-1 md:grid-cols-2 ">
@@ -119,7 +155,6 @@ export default function ProductDetails({ id }: { id: number }) {
                 onClick={() => {
                   if (el.id === color?.id) return;
                   setColorId(el.id);
-                  setSizeId(null);
                 }}
               >
                 {el.name}
