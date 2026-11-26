@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/stores/StoreProvider";
 import Link from "next/link";
+import HeaderCartLink from "./_components/HeaderCartLink";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,22 +26,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <StoreProvider>
-        <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col">
+        <StoreProvider>
           <header className="px-4 mx-auto w-full max-w-6xl sm:px-6 lg:px-8 h-24 sm:h-20 md:h-20 bg-white rounded-b-lg shadow-inner shadow-gray-800/80 flex felx-row justify-between align-middle items-center">
             <Link href="/" className="font-semibold text-xl text-zinc-800">
               Каталог
             </Link>
-            <Link
-              href="/cart"
+            <HeaderCartLink
               className="rounded-lg border border-zinc-200 text-zinc-600 px-4 hover:bg-cyan-100 transition-all ease-in-out duration-300 py-2 "
-            >
-              Корзина
-            </Link>
+            />
           </header>
           {children}
-        </body>
-      </StoreProvider>
+        </StoreProvider>
+      </body>
     </html>
   );
 }

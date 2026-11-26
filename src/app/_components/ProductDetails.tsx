@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Chip from "./Chip";
 import ProductGallery from "./ProductGallery";
+import { useStores } from "@/stores/StoreProvider";
+import CartDetailButton from "./CartDetailButton";
 type LoadState =
   | { status: "loading" }
   | { status: "error" }
@@ -16,7 +18,7 @@ export default function ProductDetails({ id }: { id: number }) {
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [colorId, setColorId] = useState<number | null>(null);
   const [sizeId, setSizeId] = useState<number | null>(null);
-
+  const { cart } = useStores();
   useEffect(() => {
     let ignore = false;
     fetchProduct(id)
@@ -71,6 +73,22 @@ export default function ProductDetails({ id }: { id: number }) {
     );
   }
 
+  const handleAdd = () => {
+    const findedSize = sizes.find((el) => el.id === sizeId);
+    if (!color || !sizeId || !findedSize) return;
+    cart.addItem({
+      productId: product.id,
+      productName: product.name,
+      colorId: color.id,
+      colorName: color.name,
+      image: color.images[0],
+      sizeId,
+      sizeName: findedSize.name,
+      unitPrice: Number(color.price),
+    });
+    console.log("После добавления", cart, cart.cart.size);
+  };
+
   const color =
     product.colors.find((el) => el.id === colorId) ?? product.colors[0];
 
@@ -109,7 +127,7 @@ export default function ProductDetails({ id }: { id: number }) {
             ))}
           </div>
           <h3 className="font-semibold my-2">Размер</h3>
-          <div className=" flex flex-wrap gap-4">
+          <div className=" flex flex-wrap gap-4 mb-4">
             {sizes.length ? (
               sizes.map((el) => (
                 <Chip
@@ -130,6 +148,12 @@ export default function ProductDetails({ id }: { id: number }) {
               </div>
             )}
           </div>
+          <CartDetailButton
+            productId={product.id}
+            colorId={color.id}
+            sizeId={sizeId}
+            onAdd={handleAdd}
+          />
         </div>
         <div></div>
       </div>
