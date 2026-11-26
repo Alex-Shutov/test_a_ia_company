@@ -34,6 +34,20 @@ export class CartSotre {
     );
   }
 
+  getQuantity(item: Pick<CartItem, "productId" | "colorId" | "sizeId">) {
+    return this.cart.get(this.generateKeyByParams(item))?.quantity ?? 0;
+  }
+
+  getCartEntries() {
+    return Array.from(this.cart.entries());
+  }
+  restoreItems(items: CartItem[]) {
+    this.cart.clear();
+    for (const item of items) {
+      this.cart.set(this.generateKeyByParams(item), item);
+    }
+  }
+
   addItem(item: Omit<CartItem, "quantity">) {
     const key = this.generateKeyByParams(item);
     const value = this.cart.get(key);
